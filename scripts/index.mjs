@@ -1,5 +1,5 @@
 /*
-1. Xac dinh cac thong tin cua 1 dia chi IP 
+1. Xac dinh cac thong tin cua 1 dia chi IP
 IP netword is devided into 2 parts net-host
 - net + host = 32 bits
 => Issue: calculte how many bits for netID and how many bits for hostID
@@ -86,11 +86,11 @@ export function getHostsInTheSameNetworkOfIPAddress(ip) {
   return `2^${numberAfterSlash} - 2`
 }
 export function getNumberOfHostInASubnet(ip, borrowedBitsFromHost) {
-  const host =  ipClass.find(i => i.key === getClassFromIPAdress(ip)).numberAfterSlash
+  const host = ipClass.find(i => i.key === getClassFromIPAdress(ip)).numberAfterSlash
   return host - borrowedBitsFromHost
 }
-export function getNumberOfChildSubnetsWhenBorrowFromNet ( borrowedBitsFromNet) {
-  return `2^${8 - borrowedBitsFromHost} - 2`
+export function getNumberOfChildSubnetsWhenBorrowFromNet(borrowedBitsFromNet) {
+  return `2^${8 - borrowedBitsFromNet} - 2`
 }
 export function getBroadcastAdressOfIPAddress(ip) {
   const splitArr = ip.split('.')

@@ -4,8 +4,7 @@ muon 4 bits tu host ID de chia subnet
 - Co bao nhieu subnet? Liet ke?
 */
 
-import * as func from './index'
-
+import * as func from './index.mjs'
 
 const subnetNumber = func.getNumberOfChildSubnetsWhenBorrowFromNet(4)
 console.log(subnetNumber)
