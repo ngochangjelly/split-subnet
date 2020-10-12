@@ -12,7 +12,7 @@ hostip nhung bit tuong ung ma bit o subnet mask = 1
 */
 
 // program to convert decimal to binary
-function convertToBinary(x) {
+export function convertToBinary(x) {
   let bin = 0;
   let rem, i = 1, step = 1;
   while (x != 0) {
@@ -23,11 +23,11 @@ function convertToBinary(x) {
   }
   return bin
 }
-function bin_to_dec(bstr) {
+export function bin_to_dec(bstr) {
   return parseInt((bstr + '')
     .replace(/[^01]/gi, ''), 2);
 }
-function getClassFromIPAdress(address) {
+export function getClassFromIPAdress(address) {
   const classIndex = parseInt(address.slice(0, 3))
   if (1 <= classIndex && classIndex <= 126) {
     return 'A'
@@ -81,11 +81,18 @@ const getNetAddressOfIPAddress = (ip) => {
   })
   return res
 }
-function getHostsInTheSameNetworkOfIPAddress(ip) {
+export function getHostsInTheSameNetworkOfIPAddress(ip) {
   const { numberAfterSlash } = ipClass.find(i => i.key === getClassFromIPAdress(ip))
   return `2^${numberAfterSlash} - 2`
 }
-function getBroadcastAdressOfIPAddress(ip) {
+export function getNumberOfHostInASubnet(ip, borrowedBitsFromHost) {
+  const host =  ipClass.find(i => i.key === getClassFromIPAdress(ip)).numberAfterSlash
+  return host - borrowedBitsFromHost
+}
+export function getNumberOfChildSubnetsWhenBorrowFromNet ( borrowedBitsFromNet) {
+  return `2^${8 - borrowedBitsFromHost} - 2`
+}
+export function getBroadcastAdressOfIPAddress(ip) {
   const splitArr = ip.split('.')
   const zeroArr = ['255', '255', '255', '255']
   const totalBitsOfIP = 4
@@ -98,7 +105,7 @@ function getBroadcastAdressOfIPAddress(ip) {
   })
   return res
 }
-function getValidUsableAdressOfIPAddress(ip) {
+export function getValidUsableAdressOfIPAddress(ip) {
   const net = getNetAddressOfIPAddress(ip).split('.')
   const broadcast = getBroadcastAdressOfIPAddress(ip).split('.')
   net[3] = parseInt(net[3]) + 1
@@ -106,7 +113,7 @@ function getValidUsableAdressOfIPAddress(ip) {
   return `${net.join('.')} - ${broadcast.join('.')}`
 }
 
-function showTable1(ip) {
+export function showTable1(ip) {
   document.getElementById('table1').style.display = 'block'
   tableDataTds = document.querySelectorAll('#table1 td')
   const tableData = [
@@ -120,7 +127,7 @@ function showTable1(ip) {
     node.innerHTML = tableData[index].value(ip)
   })
 }
-function validateForm() {
+export function validateForm() {
   var ip = document.forms["myForm"]["ip"].value.split('/')[0];
   if (ip == "") {
     alert("Fill in IP address");
