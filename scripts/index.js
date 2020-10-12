@@ -1,4 +1,6 @@
-/* IP netword is devided into 2 parts net-host
+/*
+1. Xac dinh cac thong tin cua 1 dia chi IP 
+IP netword is devided into 2 parts net-host
 - net + host = 32 bits
 => Issue: calculte how many bits for netID and how many bits for hostID
 => use subnet mask
@@ -21,15 +23,10 @@ function convertToBinary(x) {
   }
   return bin
 }
-console.log(convertToBinary(15))
-console.log(convertToBinary(19))
-console.log(convertToBinary(18))
-console.log(convertToBinary(29))
 function bin_to_dec(bstr) {
   return parseInt((bstr + '')
     .replace(/[^01]/gi, ''), 2);
 }
-console.log(bin_to_dec(11111111))
 function getClassFromIPAdress(address) {
   const classIndex = parseInt(address.slice(0, 3))
   if (1 <= classIndex && classIndex <= 126) {
@@ -48,23 +45,123 @@ function getClassFromIPAdress(address) {
     return 'E'
   }
 }
-const ipClass = [{ key: 'A', numberAfterSlash: 8, firstBytesForNet: 1 }, { key: 'B', numberAfterSlash: 16, firstBytesForNet: 2 }, { key: 'C', numberAfterSlash: 32, firstBytesForNet: 3 }]
+const ipClass = [{
+  key: 'A',
+  numberAfterSlash: 8,
+  firstBytesForNet: 1,
+  addressRange: '10.0.0.0',
+  networks: 11,
+  totalPrivateHosts: 1677721416777214
+},
+{
+  key: 'B',
+  numberAfterSlash: 16,
+  firstBytesForNet: 2,
+  addressRange: '172.16.0.0 - 172.31.0.00',
+  networks: 1616,
+  totalPrivateHosts: 1048544
+}, {
+  key: 'C',
+  numberAfterSlash: 32,
+  firstBytesForNet: 3,
+  addressRange: '',
+  networks: 256,
+  totalPrivateHosts: 65024
+}]
 const getNetAddressOfIPAddress = (ip) => {
   const splitArr = ip.split('.')
   const zeroArr = ['0', '0', '0', '0']
   const totalBitsOfIP = 4
-  console.log("getNetAddressOfIPAddress -> splitArr", splitArr)
   const firstBytesForNet = ipClass.find(i => i.key === getClassFromIPAdress(ip)).firstBytesForNet
-  console.log("getNetAddressOfIPAddress -> firstBytesForNet", firstBytesForNet)
   let res = splitArr.slice(0, firstBytesForNet).join('.')
-  console.log("getNetAddressOfIPAddress -> res", res)
-  for (let i = 0; i < totalBitsOfIP - 1; i + 1) {
-    console.log(i)
-    res += '.0'
-  }
+  zeroArr.map((z, index) => {
+    if (index < totalBitsOfIP - firstBytesForNet) {
+      res += `.${z}`
+    }
+  })
   return res
 }
+function getHostsInTheSameNetworkOfIPAddress(ip) {
+  const { numberAfterSlash } = ipClass.find(i => i.key === getClassFromIPAdress(ip))
+  return `2^${numberAfterSlash} - 2`
+}
+function getBroadcastAdressOfIPAddress(ip) {
+  const splitArr = ip.split('.')
+  const zeroArr = ['255', '255', '255', '255']
+  const totalBitsOfIP = 4
+  const firstBytesForNet = ipClass.find(i => i.key === getClassFromIPAdress(ip)).firstBytesForNet
+  let res = splitArr.slice(0, firstBytesForNet).join('.')
+  zeroArr.map((z, index) => {
+    if (index < totalBitsOfIP - firstBytesForNet) {
+      res += `.${z}`
+    }
+  })
+  return res
+}
+function getValidUsableAdressOfIPAddress(ip) {
+  const net = getNetAddressOfIPAddress(ip).split('.')
+  const broadcast = getBroadcastAdressOfIPAddress(ip).split('.')
+  net[3] = parseInt(net[3]) + 1
+  broadcast[3] = parseInt(broadcast[3]) - 1
+  return `${net.join('.')} - ${broadcast.join('.')}`
+}
 
-console.log(getNetAddressOfIPAddress('172.29.7.10'))
-console.log(getNetAddressOfIPAddress('172.29.7.10'))
+function showTable1(ip) {
+  document.getElementById('table1').style.display = 'block'
+  tableDataTds = document.querySelectorAll('#table1 td')
+  const tableData = [
+    { index: 0, value: ip => getClassFromIPAdress(ip) },
+    { index: 1, value: ip => getNetAddressOfIPAddress(ip) },
+    { index: 2, value: ip => getHostsInTheSameNetworkOfIPAddress(ip) },
+    { index: 3, value: ip => getValidUsableAdressOfIPAddress(ip) },
+    { index: 4, value: ip => getBroadcastAdressOfIPAddress(ip) }
+  ]
+  Array.from(tableDataTds).map((node, index) => {
+    node.innerHTML = tableData[index].value(ip)
+  })
+}
+function validateForm() {
+  var ip = document.forms["myForm"]["ip"].value.split('/')[0];
+  if (ip == "") {
+    alert("Fill in IP address");
+    return false;
+  }
+  showTable1(ip)
+}
+/*
+2. Chia subnets
+Qui tac chia subnet
+- Muon cac bit dau trong hostId lam netID
+- so subnet = 2^n (n: so bit vay muon phan hostId)
 
+case study:
+Cong ty A duoc cap duong mmang la:
+1!2.29.0.0/16. Cty muon chia thanh 10
+subnet trong do co 3 subnet co 100 PCs, 4
+subnet co 255 PCs, 3 subnet co 500 PCs
+
+Solution:
+10 < 2^4 => muon 4 bit cua phan HostId de chia subnet
+- muon 4 bit o byte thu 3 cua dia chi IP => byte thu 3 con 4 bits
+(1 byte = 8 bits)
+- buoc nhay: 2^ (8-4) = 16
+- Chia thanh 10 subnet:
+Subnet
+
+SUBNET      NET ADDR    HOSTIP                    BROADCAST
+==================================================================
+0000 0000  172.29.0.0   17229.0.1-172.29.15.254   17229.15255
+------------------------------------------------------------------
+0001 0000  172.29.16.0  172.29.16.1-172.29.81.254  172.29.31.255
+------------------------------------------------------------------
+0010 0000  172.29.32.0  172.29.32.1-172.29.47.254  172.29.47.255
+------------------------------------------------------------------
+0011 0000  172.29.48.0  172.29.48.1-172.29.63.254  172.29.63.255
+------------------------------------------------------------------
+0100 0000  172.29.64.0  172.29.48.1-172.29.79.254  17229.79.255
+------------------------------------------------------------------
+0101 0000  172.29.80.0  172.29.48.1-172.29.95.254  17229.95.255
+...
+==================================================================
+subnet mask cua cac mang con: 16 + 4 = 20
+*/
