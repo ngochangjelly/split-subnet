@@ -93,6 +93,7 @@ const ipClass = [{
 function getJumpStepOfSubnet(borrowBit) {
   return Math.pow(2, 8 - borrowBit)
 }
+
 const getNetAddressOfIPAddress = (ip) => {
   const splitArr = ip.split('.')
   const zeroArr = ['0', '0', '0', '0']
@@ -115,6 +116,12 @@ function getNumberOfHostInASubnet(ip, borrowedBitsFromHost) {
   return host - borrowedBitsFromHost
 }
 function getNumberOfChildSubnetsWhenBorrowFromNet(borrowedBitsFromNet) {
+  return {
+    asString: `2^${8 - borrowedBitsFromNet}`,
+    value: Math.pow(2, 8 - borrowedBitsFromNet)
+  }
+}
+function getNumberOfChildUsableSubnetsWhenBorrowFromNet(borrowedBitsFromNet) {
   return {
     asString: `2^${8 - borrowedBitsFromNet} - 2`,
     value: Math.pow(2, 8 - borrowedBitsFromNet) - 2
@@ -197,26 +204,30 @@ function listAllSubnets(ip, numberOfSubnets, borrowBit) {
     subnetCollection: subnetCollection
   }
 }
+function binaryToDecimal (bin) {
+  return parseInt(`${bin}`, 2)
+}
 function listAllPossibleIPOfEachSubnet(ip, numberOfSubnets, borrowBit) {
   const { subnetCollection } = listAllSubnets(ip, numberOfSubnets, borrowBit)
   console.log("listAllPossibleIPOfEachSubnet -> subnetCollection", subnetCollection)
+  const startingIndex = 4 - ipClass.find(i => getClassFromIPAdress(ip) === i.key).firstBytesForNet + 1
   const ul = document.createElement('ul');
-  // for (let i =0; i< subnetCollection.length - 1; i++){
-  //   let li = document.createElement('li')
-  //   if (i === 0){
-  //     li.innerHTML = `Subnet ${i} : ${subnetCollection[i]}`
-  //   } else {
-  //     const startBroadCastIndex = 
-  //     const startIndex = subnetCollection[]
-  //     const end = convertToBinary((subnetCollection[3])) - 1
-  //     startIndex +=  parseInt(startIndex) + 1
-  //     end +=  parseInt(end) + 1
-  //     li.innerHTML = `Subnet ${i} : ${start} - ${end}`
-  //   }
-  //   ul.appendChild(li)
-  // }
-  // return ul.innerHTML
-  return 'aaaaa'
+  console.log("listAllPossibleIPOfEachSubnet -> subnetCollection", subnetCollection)
+  for (let i = 0; i < subnetCollection.length - 1; i++) {
+    let li = document.createElement('li')
+    if (i === 0) {
+      li.innerHTML = `Subnet ${i} : ${subnetCollection[i].join('.')}`
+    } else {
+      const startAddr = [...subnetCollection[i]]
+      const endAddr = [...subnetCollection[i+1]]
+      startAddr[startingIndex] = parseInt(subnetCollection[i][startingIndex]) + 1
+      endAddr[2] -= 1
+      endAddr[3] = binaryToDecimal(11111111) - 1
+      li.innerHTML = `Subnet ${i} : ${startAddr.join('.')} - ${endAddr.join('.')}`
+    }
+    ul.appendChild(li)
+  }
+  return ul.innerHTML
 }
 
 function showTable2(ip, borrowBit) {
@@ -224,28 +235,34 @@ function showTable2(ip, borrowBit) {
   tableDataTds = document.querySelectorAll('#table2 td')
   numberOfSubnets = getNumberOfChildSubnetsWhenBorrowFromNet(borrowBit).value
   const tableData = [
-    { index: 0, content: ip => getClassFromIPAdress(ip) },
+    {
+      index: 0, content: ip => getClassFromIPAdress(ip)
+    },
     {
       index: 1, content: borrowBit => getNumberOfChildSubnetsWhenBorrowFromNet(borrowBit)
     },
-    { index: 2, content: (ip, numberOfSubnets, borrowBit) => listAllSubnets(ip, numberOfSubnets, borrowBit) }, {
+    {
+      index: 2, content: (ip, numberOfSubnets, borrowBit) => listAllSubnets(ip, numberOfSubnets, borrowBit)
+    },
+    {
       index: 3, content: (ip, numberOfSubnets, borrowBit) => listAllPossibleIPOfEachSubnet(ip, numberOfSubnets, borrowBit)
     }
   ]
   Array.from(tableDataTds).forEachAsyncParallel(async (node, index) => {
-    if (index === 3) {
-      node.innerHTML = await tableData[index].content(ip, numberOfSubnets, borrowBit)
-      return
-    }
     if (index === 1) {
       node.innerHTML = await tableData[index].content(borrowBit).asString
       return
     }
-    if (index === 2) {
+    else if (index === 2) {
       node.innerHTML = await tableData[index].content(ip, numberOfSubnets, borrowBit).content
       return
+    } else if (index === 3) {
+      node.innerHTML = await tableData[index].content(ip, numberOfSubnets, borrowBit)
+      return
+    } else if (index === 0) {
+      node.innerHTML = await tableData[index].content(ip)
     }
-    node.innerHTML = await tableData[index].content(ip)
+
   })
 }
 
