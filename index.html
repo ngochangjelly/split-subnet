@@ -5,12 +5,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
-  <link href="style.css"  rel="stylesheet"></link>
+  <link href="style.css" rel="stylesheet">
+  </link>
 </head>
 
 <body>
-  <h3>Find network information</h3>
   <div id="section1">
+    <h3>Find network information</h3>
     <div id="form1">
       <form name="myForm" onsubmit="validateForm(); return false">
         <label for="ip">Network IP:</label>
@@ -22,32 +23,71 @@
       <!--for demo wrap-->
       <div class="tbl-header">
         <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <th>IP class</th>
-              <td></td>
-            </tr>
-              <tr>
-                <th>Net Addr</th>
-                <td></td>
-              </tr>
-              <tr>
-                <th>Number of host in the network</th>
-                <td></td>
-              </tr>
-              <tr>
-                <th>Valid address</th>
-                <td></td>
-              </tr>
-              <tr>
-                <th>Broadcast address</th>
-                <td></td>
-              </tr>
-            </tr>
+          <tr>
+            <th>IP class</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Net Addr</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Number of host in the network</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Valid address</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Broadcast address</th>
+            <td></td>
+          </tr>
+          </tr>
         </table>
       </div>
     </section>
-    <script type="module" src="scripts/index.mjs"></script>
-    <!-- <script type="module" src="scripts/borrow-bit.js"></script> -->
+  </div>
+  <div id="section2">
+    <h3>Given IP adress, borrowed bits, How many subnet?</h3>
+    <div id="form2">
+      <form name="myForm1" onsubmit="validateForm1(); return false">
+        <label for="ip">Network IP:</label>
+        <input type="text" id="ip" name="ip" placeholder="IP address..">
+        <input type="text" id="borrowBit" name="borrowBit" placeholder="Borrowed bits..">
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+    <section id="table2">
+      <!--for demo wrap-->
+      <div class="tbl-header">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <th>IP class</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Number of subnets</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>List all subnets</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Valid address</th>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Broadcast address</th>
+            <td></td>
+          </tr>
+          </tr>
+        </table>
+      </div>
+    </section>
+  </div>
+  <script src="scripts/index.js"></script>
 </body>
 
 </html>

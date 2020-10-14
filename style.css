@@ -2,9 +2,16 @@
 #table1 {
     display: none;
 }
+#table2 {
+  display: none;
+}
 #form1 {
     display: block;
     text-align: center;
+}
+#form2 {
+  display: block;
+  text-align: center;
 }
 form
 {
