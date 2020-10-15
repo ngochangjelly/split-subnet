@@ -5,11 +5,18 @@
 #table2 {
   display: none;
 }
+#table3 {
+  display: none;
+}
 #form1 {
     display: block;
     text-align: center;
 }
 #form2 {
+  display: block;
+  text-align: center;
+}
+#form3 {
   display: block;
   text-align: center;
 }

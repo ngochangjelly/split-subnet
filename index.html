@@ -7,6 +7,7 @@
   <title>Document</title>
   <link href="style.css" rel="stylesheet">
   </link>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.25.0/babel.min.js"></script> -->
 </head>
 
 <body>
@@ -86,8 +87,49 @@
         </table>
       </div>
     </section>
+    <div id="section3">
+      <h3>Given IP adress and mask number, What subnet it belongs to?</h3>
+      <div id="form3">
+        <form name="myForm2" onsubmit="validateForm2(); return false">
+          <label for="ip">Network IP:</label>
+          <input type="text" id="ip" name="ip" placeholder="IP address..">
+          <label for="mask">Mask:</label>
+          <input type="text" id="mask" name="mask" placeholder="Mask..">
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+      <section id="table3">
+        <!--for demo wrap-->
+        <div class="tbl-header">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <th>IP class</th>
+              <td></td>
+            </tr>
+            <tr>
+              <th>Number of subnets</th>
+              <td></td>
+            </tr>
+            <tr>
+              <th>List all subnets</th>
+              <td></td>
+            </tr>
+            <tr>
+              <th>Valid address</th>
+              <td></td>
+            </tr>
+            <tr>
+              <th>Broadcast address</th>
+              <td></td>
+            </tr>
+            </tr>
+          </table>
+        </div>
+      </section>
   </div>
   <script src="scripts/index.js"></script>
+  <!-- <script type="module" async src="./scripts/constants.js"></script> -->
+
 </body>
 
 </html>
