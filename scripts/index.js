@@ -266,7 +266,7 @@ function showTable2(ip, borrowBit) {
   })
 }
 
-ipClassInfo: [
+const ipClassInfo = [
   {
     class: 'A', value: [
       {
@@ -596,32 +596,33 @@ ipClassInfo: [
     ]
   }
 ]
-function showTable3(ip, mask) {
+function identifyWhichSubnetThisAddressBelongTo(ip, bitsInNetsId) {
+  // const result = ipClassInfo.find(i => i[getClassFromIPAdress(ip)].value.networkBits === bitsInNetsId)
+  const classObj = ipClassInfo.find(i => i.class === getClassFromIPAdress(ip))
+  console.log("identifyWhichSubnetThisAddressBelongTo -> classObj", classObj.value)
+  const subnet = classObj.value.find(i => i.networkBits == bitsInNetsId)
+ const numberOfSubnets = subnet.subnets
+ const {subnetCollection} = listAllSubnets(ip, numberOfSubnets, subnet.bitsBorrowed)
+ console.log("identifyWhichSubnetThisAddressBelongTo -> allSubnets", subnetCollection)
+  return subnet
+}
+function showTable3(ip, bitsInNetsId) {
   document.getElementById('table3').style.display = 'block'
   tableDataTds = document.querySelectorAll('#table3 td')
-  numberOfSubnets = getNumberOfChildSubnetsWhenBorrowFromNet(mask).value
-  console.log("numberOfSubnets", numberOfSubnets)
   const tableData = [
     {
       index: 0, content: ip => getClassFromIPAdress(ip)
     },
     {
-      index: 2, content: (ip, numberOfSubnets, mask) => listAllSubnets(ip, numberOfSubnets, mask)
+      index: 1, content: (ip, bitsInNetsId) => identifyWhichSubnetThisAddressBelongTo(ip, bitsInNetsId)
     }
   ]
   Array.from(tableDataTds).forEachAsyncParallel(async (node, index) => {
-    if (index === 1) {
-      node.innerHTML = await tableData[index].content(mask).asString
-      return
+    if (index === 0) {
+      node.innerHTML = tableData[index].content(ip)
     }
-    else if (index === 2) {
-      node.innerHTML = await tableData[index].content(ip, numberOfSubnets, mask).content
-      return
-    } else if (index === 3) {
-      node.innerHTML = await tableData[index].content(ip, numberOfSubnets, mask)
-      return
-    } else if (index === 0) {
-      node.innerHTML = await tableData[index].content(ip)
+    if (index === 1) {
+      node.innerHTML = await tableData[index].content(ip, bitsInNetsId)
     }
   })
 }
@@ -643,16 +644,16 @@ function validateForm1() {
 function validateForm2() {
   var ip = document.forms["myForm2"]["ip"].value.split('/')[0];
   console.log("ip", ip)
-  var mask = document.forms["myForm2"]["mask"].value;
+  var bitsInNetsId = document.forms["myForm2"]["bitsInNetsId"].value;
   if (ip == "") {
     alert("Fill in IP address");
     return false;
   }
-  if (mask == "") {
-    alert("Fill in mask number");
+  if (bitsInNetsId == "") {
+    alert("Fill in bitsInNetsId number");
     return false;
   }
-  showTable3(ip, mask)
+  showTable3(ip, bitsInNetsId)
 
 }
 
